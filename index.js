@@ -10,7 +10,7 @@ const authRouter = require('./routers/auth.js')
 dotenv.config()
 
 // Connect to DB
-mongoose.connect(process.env.CONNECT_DB, { useNewUrlParser: true }, () => {
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true }, () => {
   console.log('connected to db')
 })
 
