@@ -2,6 +2,9 @@ const router = require('express').Router()
 const User = require('../models/User')
 const { registerValidation, loginValidation } = require('../validation/User')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+
+// REGISTER ROUTE
 
 router.post('/register', async (req, res) => {
   // Validate data before creating a user
@@ -30,21 +33,25 @@ router.post('/register', async (req, res) => {
   }
 })
 
+// LOGIN ROUTE
+
 router.post('/login', async (req, res) => {
   // validate request body
   const { error } = loginValidation(req.body)
   if (error) return res.status(400).send({ err: error.details[0].message })
 
   // check the email if exist
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).send({ err: "Email or password is wrong" });
+  const user = await User.findOne({ email: req.body.email })
+  if (!user) return res.status(400).send({ err: 'Email or password is wrong' })
 
-  const validPass = await bcrypt.compare(req.body.password, user.password);
-  if (!validPass) return res.status(400).send({ err: "Invalid password" });
+  // check the password if correct
+  const validPass = await bcrypt.compare(req.body.password, user.password)
+  if (!validPass) return res.status(400).send({ err: 'Invalid password' })
 
-  res.send('login success')
+  // Create and assign a token
+  const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY)
 
-
+  res.header('auth-token', token).send({ token: token })
 })
 
 module.exports = router

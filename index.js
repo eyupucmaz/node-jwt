@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 
 // Import routes
 const authRouter = require('./routers/auth.js')
+const postRouter = require('./routers/post.js')
 
 // Config dotenv
 dotenv.config()
@@ -16,7 +17,8 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true }, () => {
 
 // Route middlewares
 app.use(express.json())
-app.use('/api/auth', authRouter)
+app.use('/api/auth', authRouter).use('/api/user', postRouter)
+// app.use('/api/user', postRouter)
 
 // Start server
 app.listen(process.env.SERVER_PORT, () => {
